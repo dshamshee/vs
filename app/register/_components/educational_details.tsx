@@ -1,5 +1,6 @@
 "use client"
 
+import { useCallback } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { BookOpen, GraduationCap, Hash, CalendarDays } from "lucide-react"
@@ -33,6 +34,11 @@ import {
 } from "../lib/zod-type/register-type"
 import { courseDuration } from "@/db/schema/student"
 import { useRegistrationStore } from "../store/registration-store"
+import { AutocompleteInput } from "./autocomplete-input"
+import {
+    fetchUniversities,
+    fetchColleges,
+} from "../lib/api/education-api"
 
 export const Educational_Details_Form = () => {
     const { educationalDetails, setEducationalDetails, setStep } =
@@ -62,6 +68,25 @@ export const Educational_Details_Form = () => {
         setStep(0)
     }
 
+    // Force uppercase on change for text fields
+    const handleUppercaseChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        fieldOnChange: (value: string) => void
+    ) => {
+        fieldOnChange(e.target.value.toUpperCase())
+    }
+
+    // Stable references for autocomplete fetch functions
+    const universityFetcher = useCallback(
+        (query: string) => fetchUniversities(query),
+        []
+    )
+
+    const collegeFetcher = useCallback(
+        (query: string) => fetchColleges(query),
+        []
+    )
+
     return (
         <Card className="shadow-lg border-primary/10">
             <CardHeader className="border-b border-border/50 pb-6">
@@ -82,8 +107,8 @@ export const Educational_Details_Form = () => {
             <CardContent className="pt-6">
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <FieldGroup>
-                        {/* University and College */}
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        {/* University and College - 3 columns for consistency */}
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
                                 name="university"
@@ -94,9 +119,16 @@ export const Educational_Details_Form = () => {
                                             University *
                                         </FieldLabel>
                                         <FieldContent>
-                                            <Input
-                                                {...field}
-                                                placeholder="Enter university name"
+                                            <AutocompleteInput
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                onBlur={field.onBlur}
+                                                fetchSuggestions={
+                                                    universityFetcher
+                                                }
+                                                placeholder="Search university name"
+                                                manualPlaceholder="Enter university name manually"
+                                                manualLabel="University not listed? Enter manually"
                                             />
                                             <FieldError>
                                                 {fieldState.error?.message}
@@ -113,9 +145,41 @@ export const Educational_Details_Form = () => {
                                     <Field data-invalid={!!fieldState.error}>
                                         <FieldLabel>College *</FieldLabel>
                                         <FieldContent>
+                                            <AutocompleteInput
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                onBlur={field.onBlur}
+                                                fetchSuggestions={
+                                                    collegeFetcher
+                                                }
+                                                placeholder="Search college name"
+                                                manualPlaceholder="Enter college name manually"
+                                                manualLabel="College not listed? Enter manually"
+                                            />
+                                            <FieldError>
+                                                {fieldState.error?.message}
+                                            </FieldError>
+                                        </FieldContent>
+                                    </Field>
+                                )}
+                            />
+
+                            <Controller
+                                control={form.control}
+                                name="program"
+                                render={({ field, fieldState }) => (
+                                    <Field data-invalid={!!fieldState.error}>
+                                        <FieldLabel>Program *</FieldLabel>
+                                        <FieldContent>
                                             <Input
                                                 {...field}
-                                                placeholder="Enter college name"
+                                                onChange={(e) =>
+                                                    handleUppercaseChange(
+                                                        e,
+                                                        field.onChange
+                                                    )
+                                                }
+                                                placeholder="e.g., B.Tech CSE"
                                             />
                                             <FieldError>
                                                 {fieldState.error?.message}
@@ -126,27 +190,8 @@ export const Educational_Details_Form = () => {
                             />
                         </div>
 
-                        {/* Program and Enrollment */}
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            <Controller
-                                control={form.control}
-                                name="program"
-                                render={({ field, fieldState }) => (
-                                    <Field data-invalid={!!fieldState.error}>
-                                        <FieldLabel>Program *</FieldLabel>
-                                        <FieldContent>
-                                            <Input
-                                                {...field}
-                                                placeholder="e.g., B.Tech CSE"
-                                            />
-                                            <FieldError>
-                                                {fieldState.error?.message}
-                                            </FieldError>
-                                        </FieldContent>
-                                    </Field>
-                                )}
-                            />
-
+                        {/* Enrollment, CGPA, CGPA out of - 3 columns */}
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
                                 name="enrollment_number"
@@ -159,6 +204,12 @@ export const Educational_Details_Form = () => {
                                         <FieldContent>
                                             <Input
                                                 {...field}
+                                                onChange={(e) =>
+                                                    handleUppercaseChange(
+                                                        e,
+                                                        field.onChange
+                                                    )
+                                                }
                                                 placeholder="Enter enrollment number"
                                             />
                                             <FieldError>
@@ -168,10 +219,7 @@ export const Educational_Details_Form = () => {
                                     </Field>
                                 )}
                             />
-                        </div>
 
-                        {/* CGPA, CGPA out of, Is on going */}
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
                                 name="cgpa"
@@ -231,35 +279,10 @@ export const Educational_Details_Form = () => {
                                     </Field>
                                 )}
                             />
-
-                            <Controller
-                                control={form.control}
-                                name="is_on_going"
-                                render={({ field }) => (
-                                    <Field>
-                                        <FieldLabel>Currently Pursuing</FieldLabel>
-                                        <FieldContent>
-                                            <div className="flex items-center gap-3 pt-1">
-                                                <Switch
-                                                    checked={field.value}
-                                                    onCheckedChange={
-                                                        field.onChange
-                                                    }
-                                                />
-                                                <span className="text-sm text-muted-foreground">
-                                                    {field.value
-                                                        ? "Yes, ongoing"
-                                                        : "No, completed"}
-                                                </span>
-                                            </div>
-                                        </FieldContent>
-                                    </Field>
-                                )}
-                            />
                         </div>
 
-                        {/* Passing year and Duration */}
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        {/* Passing year, Duration, Is ongoing - 3 columns */}
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
                                 name="passing_year"
@@ -338,6 +361,31 @@ export const Educational_Details_Form = () => {
                                             <FieldError>
                                                 {fieldState.error?.message}
                                             </FieldError>
+                                        </FieldContent>
+                                    </Field>
+                                )}
+                            />
+
+                            <Controller
+                                control={form.control}
+                                name="is_on_going"
+                                render={({ field }) => (
+                                    <Field>
+                                        <FieldLabel>Currently Pursuing</FieldLabel>
+                                        <FieldContent>
+                                            <div className="flex items-center gap-3 pt-1">
+                                                <Switch
+                                                    checked={field.value}
+                                                    onCheckedChange={
+                                                        field.onChange
+                                                    }
+                                                />
+                                                <span className="text-sm text-muted-foreground">
+                                                    {field.value
+                                                        ? "Yes, ongoing"
+                                                        : "No, completed"}
+                                                </span>
+                                            </div>
                                         </FieldContent>
                                     </Field>
                                 )}

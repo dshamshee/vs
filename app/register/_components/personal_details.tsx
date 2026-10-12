@@ -63,6 +63,24 @@ export const Personal_Details_Form = () => {
         setStep(1)
     }
 
+    // Force uppercase on change (actual value, not CSS) for text fields
+    const handleUppercaseChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        fieldOnChange: (value: string) => void
+    ) => {
+        fieldOnChange(e.target.value.toUpperCase())
+    }
+
+    // Only allow digits for phone/aadhar fields
+    const handleDigitsOnly = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        fieldOnChange: (value: string) => void,
+        maxLength: number
+    ) => {
+        const value = e.target.value.replace(/\D/g, "").slice(0, maxLength)
+        fieldOnChange(value)
+    }
+
     return (
         <Card className="shadow-lg border-primary/10">
             <CardHeader className="border-b border-border/50 pb-6">
@@ -83,7 +101,7 @@ export const Personal_Details_Form = () => {
             <CardContent className="pt-6">
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <FieldGroup>
-                        {/* Name fields row */}
+                        {/* Name fields row - 3 columns */}
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
@@ -94,6 +112,12 @@ export const Personal_Details_Form = () => {
                                         <FieldContent>
                                             <Input
                                                 {...field}
+                                                onChange={(e) =>
+                                                    handleUppercaseChange(
+                                                        e,
+                                                        field.onChange
+                                                    )
+                                                }
                                                 placeholder="Enter first name"
                                             />
                                             <FieldError>
@@ -113,6 +137,12 @@ export const Personal_Details_Form = () => {
                                         <FieldContent>
                                             <Input
                                                 {...field}
+                                                onChange={(e) =>
+                                                    handleUppercaseChange(
+                                                        e,
+                                                        field.onChange
+                                                    )
+                                                }
                                                 placeholder="Enter middle name"
                                             />
                                             <FieldError>
@@ -132,6 +162,12 @@ export const Personal_Details_Form = () => {
                                         <FieldContent>
                                             <Input
                                                 {...field}
+                                                onChange={(e) =>
+                                                    handleUppercaseChange(
+                                                        e,
+                                                        field.onChange
+                                                    )
+                                                }
                                                 placeholder="Enter last name"
                                             />
                                             <FieldError>
@@ -143,8 +179,8 @@ export const Personal_Details_Form = () => {
                             />
                         </div>
 
-                        {/* Parents' names */}
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        {/* Parents' names - 3 columns for consistency */}
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
                                 name="fathers_name"
@@ -156,6 +192,12 @@ export const Personal_Details_Form = () => {
                                         <FieldContent>
                                             <Input
                                                 {...field}
+                                                onChange={(e) =>
+                                                    handleUppercaseChange(
+                                                        e,
+                                                        field.onChange
+                                                    )
+                                                }
                                                 placeholder="Enter father's name"
                                             />
                                             <FieldError>
@@ -177,6 +219,12 @@ export const Personal_Details_Form = () => {
                                         <FieldContent>
                                             <Input
                                                 {...field}
+                                                onChange={(e) =>
+                                                    handleUppercaseChange(
+                                                        e,
+                                                        field.onChange
+                                                    )
+                                                }
                                                 placeholder="Enter mother's name"
                                             />
                                             <FieldError>
@@ -186,10 +234,7 @@ export const Personal_Details_Form = () => {
                                     </Field>
                                 )}
                             />
-                        </div>
 
-                        {/* DOB, Phone, Email */}
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
                                 name="dob"
@@ -212,7 +257,10 @@ export const Personal_Details_Form = () => {
                                     </Field>
                                 )}
                             />
+                        </div>
 
+                        {/* Phone, Email, Gender - 3 columns */}
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
                                 name="phone"
@@ -225,8 +273,17 @@ export const Personal_Details_Form = () => {
                                         <FieldContent>
                                             <Input
                                                 {...field}
-                                                type="tel"
+                                                type="text"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
                                                 maxLength={10}
+                                                onChange={(e) =>
+                                                    handleDigitsOnly(
+                                                        e,
+                                                        field.onChange,
+                                                        10
+                                                    )
+                                                }
                                                 placeholder="10-digit phone number"
                                             />
                                             <FieldError>
@@ -259,10 +316,7 @@ export const Personal_Details_Form = () => {
                                     </Field>
                                 )}
                             />
-                        </div>
 
-                        {/* Gender, Aadhar */}
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
                                 name="gender"
@@ -297,7 +351,10 @@ export const Personal_Details_Form = () => {
                                     </Field>
                                 )}
                             />
+                        </div>
 
+                        {/* Aadhar - 3 columns (1 field + 2 empty for alignment) */}
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <Controller
                                 control={form.control}
                                 name="aadhar"
@@ -310,7 +367,17 @@ export const Personal_Details_Form = () => {
                                         <FieldContent>
                                             <Input
                                                 {...field}
+                                                type="text"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
                                                 maxLength={12}
+                                                onChange={(e) =>
+                                                    handleDigitsOnly(
+                                                        e,
+                                                        field.onChange,
+                                                        12
+                                                    )
+                                                }
                                                 placeholder="12-digit Aadhar number"
                                             />
                                             <FieldError>

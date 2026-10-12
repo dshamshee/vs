@@ -11,7 +11,7 @@ export const student_details_schema = z.object({
     phone: z.string().min(10, {message: "Phone number must be at least 10 digits"}).max(10, {message: "Phone number must be at most 10 digits"}),
     email: z.email().trim().transform((val)=> val.toUpperCase()),
     gender: z.enum(genderEnum.enumValues),
-    aadhar: z.string().min(12, {message: "aadhar number must be at least 12 digits"}).max(12, {message: "aadhar number must be at most 12 digits"}).trim(),
+    aadhar: z.string().min(12, {message: "aadhar number must be at least 12 digits"}).max(12, {message: "aadhar number must be at most 12 digits"}),
     profile: z.string().optional()
 })
 
