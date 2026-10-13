@@ -21,12 +21,9 @@ import {
     FieldLabel,
 } from "@/components/ui/field"
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+    NativeSelect,
+    NativeSelectOption,
+} from "@/components/ui/native-select"
 import {
     student_details_schema,
     type Student_Details_Type,
@@ -324,26 +321,26 @@ export const Personal_Details_Form = () => {
                                     <Field data-invalid={!!fieldState.error}>
                                         <FieldLabel>Gender *</FieldLabel>
                                         <FieldContent>
-                                            <Select
+                                            <NativeSelect
+                                                className="w-full"
+                                                {...field}
                                                 value={field.value ?? ""}
-                                                onValueChange={field.onChange}
+                                                aria-invalid={!!fieldState.error}
                                             >
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select gender" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {genderEnum.enumValues.map(
-                                                        (gender) => (
-                                                            <SelectItem
-                                                                key={gender}
-                                                                value={gender}
-                                                            >
-                                                                {gender}
-                                                            </SelectItem>
-                                                        )
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
+                                                <NativeSelectOption value="" disabled>
+                                                    Select gender
+                                                </NativeSelectOption>
+                                                {genderEnum.enumValues.map(
+                                                    (gender) => (
+                                                        <NativeSelectOption
+                                                            key={gender}
+                                                            value={gender}
+                                                        >
+                                                            {gender}
+                                                        </NativeSelectOption>
+                                                    )
+                                                )}
+                                            </NativeSelect>
                                             <FieldError>
                                                 {fieldState.error?.message}
                                             </FieldError>

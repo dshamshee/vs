@@ -21,12 +21,9 @@ import {
     FieldLabel,
 } from "@/components/ui/field"
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+    NativeSelect,
+    NativeSelectOption,
+} from "@/components/ui/native-select"
 import { Switch } from "@/components/ui/switch"
 import {
     student_educational_schema,
@@ -293,32 +290,32 @@ export const Educational_Details_Form = () => {
                                             Passing Year *
                                         </FieldLabel>
                                         <FieldContent>
-                                            <Select
+                                            <NativeSelect
+                                                className="w-full"
+                                                {...field}
                                                 value={field.value ?? ""}
-                                                onValueChange={field.onChange}
+                                                aria-invalid={!!fieldState.error}
                                             >
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select passing year" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {[
-                                                        "2024",
-                                                        "2025",
-                                                        "2026",
-                                                        "2027",
-                                                        "2028",
-                                                        "2029",
-                                                        "2030",
-                                                    ].map((year) => (
-                                                        <SelectItem
-                                                            key={year}
-                                                            value={year}
-                                                        >
-                                                            {year}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
+                                                <NativeSelectOption value="" disabled>
+                                                    Select passing year
+                                                </NativeSelectOption>
+                                                {[
+                                                    "2024",
+                                                    "2025",
+                                                    "2026",
+                                                    "2027",
+                                                    "2028",
+                                                    "2029",
+                                                    "2030",
+                                                ].map((year) => (
+                                                    <NativeSelectOption
+                                                        key={year}
+                                                        value={year}
+                                                    >
+                                                        {year}
+                                                    </NativeSelectOption>
+                                                ))}
+                                            </NativeSelect>
                                             <FieldError>
                                                 {fieldState.error?.message}
                                             </FieldError>
@@ -336,28 +333,26 @@ export const Educational_Details_Form = () => {
                                             Course Duration *
                                         </FieldLabel>
                                         <FieldContent>
-                                            <Select
+                                            <NativeSelect
+                                                className="w-full"
+                                                {...field}
                                                 value={field.value ?? ""}
-                                                onValueChange={field.onChange}
+                                                aria-invalid={!!fieldState.error}
                                             >
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select duration" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {courseDuration.enumValues.map(
-                                                        (duration) => (
-                                                            <SelectItem
-                                                                key={duration}
-                                                                value={
-                                                                    duration
-                                                                }
-                                                            >
-                                                                {duration}
-                                                            </SelectItem>
-                                                        )
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
+                                                <NativeSelectOption value="" disabled>
+                                                    Select duration
+                                                </NativeSelectOption>
+                                                {courseDuration.enumValues.map(
+                                                    (duration) => (
+                                                        <NativeSelectOption
+                                                            key={duration}
+                                                            value={duration}
+                                                        >
+                                                            {duration}
+                                                        </NativeSelectOption>
+                                                    )
+                                                )}
+                                            </NativeSelect>
                                             <FieldError>
                                                 {fieldState.error?.message}
                                             </FieldError>
